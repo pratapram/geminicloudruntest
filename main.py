@@ -50,7 +50,7 @@ safety_settings = [
 
 
 def generate():
-  vertexai.init(project="demoproject-359716", location="us-central1")
+  vertexai.init(project="yourprojectname", location="us-central1")
   variables = [
     {
     },
