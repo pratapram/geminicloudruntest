@@ -20,7 +20,7 @@ from vertexai.generative_models import GenerativeModel, SafetySetting, Part
 
 
 def multiturn_generate_content():
-  vertexai.init(project="demoproject-359716", location="us-central1")
+  vertexai.init(project="YOURPROJECTNAME", location="us-central1")
   model = GenerativeModel(
     "gemini-1.5-flash-001",
     system_instruction=["""you are a nyc expert"""]
