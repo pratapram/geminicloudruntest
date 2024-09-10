@@ -12,17 +12,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 from flask import Flask, render_template, jsonify
 app = Flask(__name__)
-
 import base64
 import vertexai
-from vertexai.generative_models import GenerativeModel, Part, SafetySetting, FinishReason
-import vertexai.generative_models as generative_models
-from vertexai.preview.prompts import Prompt
+from vertexai.generative_models import GenerativeModel, SafetySetting, Part
 
 
+def multiturn_generate_content():
+  vertexai.init(project="demoproject-359716", location="us-central1")
+  model = GenerativeModel(
+    "gemini-1.5-flash-001",
+    system_instruction=["""you are a nyc expert"""]
+  )
+  chat = model.start_chat()
+  response = chat.send_message(
+      ["""hello"""],
+      generation_config=generation_config,
+      safety_settings=safety_settings)
+  print (response.text)
+  return response.text
 generation_config = {
     "max_output_tokens": 8192,
     "temperature": 1,
@@ -48,38 +57,14 @@ safety_settings = [
     ),
 ]
 
+multiturn_generate_content()
 
-def generate():
-  vertexai.init(project="yourprojectname", location="us-central1")
-  variables = [
-    {
-    },
-  ]
-  prompt = Prompt(
-    prompt_data=["""What is the capital of New york state?"""],
-    model_name="gemini-1.5-flash-001",
-    variables=variables,
-    generation_config=generation_config,
-    safety_settings=safety_settings,
-  )
-  # Generate content using the assembled prompt. Change the index if you want
-  # to use a different set in the variable value list.
-  response = prompt.generate_content(
-      contents=prompt.assemble_contents(**prompt.variables[0]),
-      stream=False,
-  )
-  #print (response.text)
-  #dir(response)
-  return (response.text)
-
-#generate()
 
 
 
 @app.route('/')
 def index():
-    text = generate()
-
+    text = multiturn_generate_content()
     return text
 
 
