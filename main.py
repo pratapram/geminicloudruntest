@@ -11,27 +11,18 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-from flask import Flask, render_template, jsonify
-app = Flask(__name__)
+import chainlit as cl
 import base64
 import vertexai
 from vertexai.generative_models import GenerativeModel, SafetySetting, Part
+import asyncio
 
-
-def multiturn_generate_content():
-  vertexai.init(project="YOURPROJECTNAME", location="us-central1")
-  model = GenerativeModel(
+vertexai.init(project="demoproject-359716", location="us-central1")
+model = GenerativeModel(
     "gemini-1.5-flash-001",
     system_instruction=["""you are a nyc expert"""]
-  )
-  chat = model.start_chat()
-  response = chat.send_message(
-      ["""hello"""],
-      generation_config=generation_config,
-      safety_settings=safety_settings)
-  print (response.text)
-  return response.text
+    )
+
 generation_config = {
     "max_output_tokens": 8192,
     "temperature": 1,
@@ -57,17 +48,32 @@ safety_settings = [
     ),
 ]
 
-multiturn_generate_content()
+@cl.on_message
+async def main(msg: cl.Message):
+    print("The user sent: ", msg.content)
+
+    response = cl.Message(content = "")
 
 
+    stream = await model.generate_content_async(
+          [msg.content],
+          generation_config=generation_config,
+          safety_settings=safety_settings,
+          stream = True
+    )
+    #print (stream)
+    async for chunk in stream:
+        #print (chunk)
+        if 'candidates' in chunk.to_dict().keys():
+            if 'content' in chunk.candidates[0].to_dict().keys():
+                token = chunk.text
+                await response.stream_token(token)
+    await response.update()
 
 
-@app.route('/')
-def index():
-    text = multiturn_generate_content()
-    return text
-
+ 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    from chainlit.cli import run_chainlit
+    run_chainlit(__file__)
 
