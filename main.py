@@ -17,7 +17,7 @@ import vertexai
 from vertexai.generative_models import GenerativeModel, SafetySetting, Part
 import asyncio
 
-vertexai.init(project="demoproject-359716", location="us-central1")
+vertexai.init(project="yourprojectname", location="us-central1")
 model = GenerativeModel(
     "gemini-1.5-flash-001",
     system_instruction=["""you are a nyc expert"""]
