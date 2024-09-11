@@ -73,7 +73,7 @@ async def main(msg: cl.Message):
 
  
 
-if __name__ == "__main__":
-    from chainlit.cli import run_chainlit
-    run_chainlit(__file__)
+# if __name__ == "__main__":
+#     from chainlit.cli import run_chainlit
+#     run_chainlit(__file__)
 
